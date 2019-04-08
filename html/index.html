@@ -1,0 +1,185 @@
+<html>
+  <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    *{
+      box-sizing:border-box;
+    }
+    ::-webkit-scrollbar {
+      width: 0.7em;
+      background: rgba(0,0,0,0);
+      border:1px solid rgba(0,0,0,.4);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: transparent;
+      border:1px solid rgba(0,0,0,.4);
+      height:30px;
+    }
+    
+    ::-webkit-scrollbar-track-piece
+    {
+       display:none;
+    }
+    html{
+      margin:0;
+      padding:8px;
+    }
+      body{
+        margin:0;
+        padding:6px;
+        background-image: linear-gradient(to bottom, #7d7e7d 0%,#0e0e0e 100%);
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size:cover;
+        
+      }
+      a{
+        color:black;
+        text-decoration:none;
+      }
+      a:visited{
+        color:black;
+      }
+      ul{
+        list-style: none;
+        padding:0;
+        margin:0;
+      }
+      h2{
+        margin-bottom:4px;
+        padding-bottom:0;
+        font-family:Calibri;
+        font-size:19px;
+      }
+      .horisontal-scroller{
+        position:relative;
+      }
+      ul{
+        width:100%;
+        display:flex;
+        flex-flow:row wrap;
+        overflow:hidden;
+      }
+      ul > a > li{
+        display:inline-block;
+        text-overflow: ellipsis;
+        width: calc(  ( 100vw / 2) - 20px  );
+        height: calc( ( (( 100vw / 2) - 20px) / 2) * 3 );
+        overflow:hidden;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: 50% 50%;
+        margin-top:3px;
+        margin-bottom:3px;
+      }
+      ul > a > li:nth-child(n+1){
+        margin-left:3px;
+      }
+      ul > a > li:nth-child(n-1){
+        margin-right:3px;
+      }
+      ul > a > li > ul{
+        display:flex;
+        flex-flow:column nowrap;
+        overflow:hidden;
+        width:100%;
+      }
+      ul > a > li > ul > li{
+        text-overflow: ellipsis;
+        display:inline-block;
+        width:100%;
+        color:rgba(255,255,255,.7);
+        overflow:hidden;
+      }
+      
+      @media (min-width: 1025px)  {
+        ul > a > li{
+        display:inline-block;
+        text-overflow: ellipsis;
+        width: calc(  ( 100vw / 3) - 26px  );
+        height: calc( ( (( 100vw / 3) - 26px) / 2) * 3 );
+        }
+      }
+      @media (min-width: 1600px)  {
+        ul > a > li{
+        display:inline-block;
+        text-overflow: ellipsis;
+        width: calc(  ( 100vw / 4) - 17px  );
+        height: calc( ( (( 100vw / 4) - 17px) / 2) * 3 );
+        }
+      }
+    </style>
+  </head>
+  <body>
+
+
+      <script>
+        function castClick(href){
+          console.log('this is the proper link')
+          console.log(href)
+          fetch(href)
+              .then(function(response) {
+                console.log('Castat')
+              })
+              .catch(function(err){
+                console.log('err %s', err)
+              })
+              return false;
+        }
+          // function handleMovieClicks(e){
+          //   console.log('klicket fångat på rätt ställe')
+          //   console.log(e.target);
+          //   if (e.target.classList.contains('cast-link')){
+          //     console.log('och rätt element')
+          //     e.preventDefault();
+          //     const href = e.target.getAttribute('href');
+          //     fetch(href)
+          //     .then(function(response) {
+          //       console.log('Castat')
+          //     })
+          //     .catch(function(err){
+          //       console.log('err %s', err)
+          //     })
+          //     return false;
+          //   }
+          // }
+          // document.onclick = handleMovieClicks;
+          
+      
+         (function(){
+            fetch('/moviedata')
+              .then(function(response) {
+                console.log('fick filmer')
+                console.log(response)
+                return response.json();
+              })
+              .then(function(jsonMovies){
+                console.log(JSON.stringify(jsonMovies));
+                htmlString = `<ul>`
+                jsonMovies.forEach( (movie) => {
+                  imageUrl = `url('/image/${encodeURIComponent(movie.name.replace("'","%27"))}/${encodeURIComponent(movie.poster)}')`;
+                  htmlString +=`
+                  <a class="cast-link" onclick="castClick('/cast/${encodeURIComponent(movie.playPath + '/' + movie.movieToPlay)}');return false;" href="/cast/${encodeURIComponent(movie.playPath + '/' + movie.movieToPlay)}">
+                  <li ${ ( (movie.poster) ? `style="background-image:${imageUrl}"` : '')}>
+                    
+
+                  
+                  </li>
+                </a>
+                  `
+                })
+                htmlString += `</ul>`
+                document.body.innerHTML = document.body.innerHTML + htmlString;
+              })
+                                  // <h2>${movie.name}</h2>
+                    // <ul>
+                    //   ${movie.movieFiles.map( (file) => { return `<li>${file}</li>`} ).join('') }
+                    // </ul>
+              .catch(function(err){
+                console.log('err %s', err)
+              })
+          })();
+          </script>
+  </body>
+
+  </html>
